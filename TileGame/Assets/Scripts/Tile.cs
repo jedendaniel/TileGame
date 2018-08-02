@@ -8,8 +8,8 @@ namespace Assets.Scripts
 {
     public class Tile
     {
-        public Color mNormalColor;
-        public GameObject mTileObject;
+        public Color normalColor;
+        public GameObject tileObject;
 
         public Tile()
         {

@@ -5,7 +5,7 @@ using UnityEngine;
 public class InputHandler
 {
 
-    private MouseButtonDownCommand mouseButtonDown;
+    private Command mouseButtonDown;
     private Command buttonO;
     private Command button4;
 
@@ -16,7 +16,7 @@ public class InputHandler
         button4 = new Button4Command();
     }
 
-    public Command getInput()
+    public Command GetInput()
     {
         if (Input.anyKey)
         {

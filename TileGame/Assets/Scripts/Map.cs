@@ -35,9 +35,8 @@ public class Map : MonoBehaviour {
                 newTile.name = "Tile-" + x + "-" + z;
                 newTile.transform.SetParent(this.transform);
                 MeshRenderer mr = newTile.GetComponentInChildren<MeshRenderer>();
-                //mr.material.color = Color.green;
-                tileMatrix[x][z].mNormalColor = mr.material.color;
-                tileMatrix[x][z].mTileObject = newTile;
+                tileMatrix[x][z].normalColor = mr.material.color;
+                tileMatrix[x][z].tileObject = newTile;
             }
         }
     }
@@ -48,17 +47,17 @@ public class Map : MonoBehaviour {
 
         if (selectedTile != null)
         {
-            mr = selectedTile.mTileObject.GetComponentInChildren<MeshRenderer>();
-            mr.material.color = selectedTile.mNormalColor;
+            mr = selectedTile.tileObject.GetComponentInChildren<MeshRenderer>();
+            mr.material.color = selectedTile.normalColor;
         }
         else
         {
             selectedTile = new Tile();
         }
 
-        selectedTile.mTileObject = ourHitObject;
-        mr = selectedTile.mTileObject.GetComponentInChildren<MeshRenderer>();
-        selectedTile.mNormalColor = mr.material.color;
+        selectedTile.tileObject = ourHitObject;
+        mr = selectedTile.tileObject.GetComponentInChildren<MeshRenderer>();
+        selectedTile.normalColor = mr.material.color;
         mr.material.color = highlightColor;
     }
 
@@ -68,16 +67,16 @@ public class Map : MonoBehaviour {
 
         if (selectedTile != null)
         {
-            mr = selectedTile.mTileObject.GetComponentInChildren<MeshRenderer>();
-            mr.material.color = selectedTile.mNormalColor;
+            mr = selectedTile.tileObject.GetComponentInChildren<MeshRenderer>();
+            mr.material.color = selectedTile.normalColor;
         }
 
         string[] nameArray = gameObject.transform.parent.name.Split('-');
-        tileMatrix[int.Parse(nameArray[1])][int.Parse(nameArray[2])].mNormalColor = newTile.mNormalColor;
-        Transform origin = tileMatrix[int.Parse(nameArray[1])][int.Parse(nameArray[2])].mTileObject.transform;
-        Object.Destroy(tileMatrix[int.Parse(nameArray[1])][int.Parse(nameArray[2])].mTileObject);
-        tileMatrix[int.Parse(nameArray[1])][int.Parse(nameArray[2])].mTileObject = Instantiate(newTile.mTileObject, origin.position, origin.rotation, origin.parent);
-        tileMatrix[int.Parse(nameArray[1])][int.Parse(nameArray[2])].mTileObject.name = origin.name;
+        tileMatrix[int.Parse(nameArray[1])][int.Parse(nameArray[2])].normalColor = newTile.normalColor;
+        Transform origin = tileMatrix[int.Parse(nameArray[1])][int.Parse(nameArray[2])].tileObject.transform;
+        Object.Destroy(tileMatrix[int.Parse(nameArray[1])][int.Parse(nameArray[2])].tileObject);
+        tileMatrix[int.Parse(nameArray[1])][int.Parse(nameArray[2])].tileObject = Instantiate(newTile.tileObject, origin.position, origin.rotation, origin.parent);
+        tileMatrix[int.Parse(nameArray[1])][int.Parse(nameArray[2])].tileObject.name = origin.name;
     }
 
 }

@@ -9,7 +9,7 @@ using System.Collections;
 public abstract class Command
 {
     public Command() { }
-    public abstract void execute(GameManager gameManager);
+    public abstract void Execute(GameManager gameManager);
 }
 
 public class MouseButtonDownCommand : Command
@@ -17,7 +17,7 @@ public class MouseButtonDownCommand : Command
     public MouseButtonDownCommand() : base()
     {
     }
-    public override void execute(GameManager gameManager)
+    public override void Execute(GameManager gameManager)
     {
 
 
@@ -47,7 +47,7 @@ public class MouseButtonDownCommand : Command
 public class ButtonOCommand : Command
 {
     public ButtonOCommand() : base() { }
-    public override void execute(GameManager gameManager)
+    public override void Execute(GameManager gameManager)
     {
         Debug.Log("OoooooOoo");
     }
@@ -56,7 +56,7 @@ public class ButtonOCommand : Command
 public class Button4Command : Command
 {
     public Button4Command() : base() { }
-    public override void execute(GameManager gameManager)
+    public override void Execute(GameManager gameManager)
     {
         
     }

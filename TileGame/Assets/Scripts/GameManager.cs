@@ -8,7 +8,7 @@ using UnityEngine;
 public class GameManager : MonoBehaviour {
 
     public Map map;
-    public InputHandler inputHandler;
+    private InputHandler inputHandler;
     private Command command;
 
     // Use this for initialization
@@ -18,10 +18,10 @@ public class GameManager : MonoBehaviour {
 	}
 	// Update is called once per frame
 	void Update () {
-        command = inputHandler.getInput();
+        command = inputHandler.GetInput();
         if (command != null)
         {
-            command.execute(this);
+            command.Execute(this);
         }
     }
 }
