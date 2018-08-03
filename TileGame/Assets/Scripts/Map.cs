@@ -1,82 +1,48 @@
 ﻿using Assets.Scripts;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Map : MonoBehaviour {
+[Serializable]
+public class Map{
     
-    public GameObject tilePrefab;
     public int width, height;
+    public GameObject tilesParent;
+
+    public Terrain plainTerrain;
+    public Terrain mountainTerrain;
+    public Terrain waterTerrain;
 
     Tile[][] tileMatrix;
-
-    //GameObject selectedTile = null;
     Tile selectedTile;
 
-    Color highlightColor = Color.red;
+    public Map()
+    {
+    }
 
-
-	// Use this for initialization
-	void Start () {
-        generateMap();
-	}
-
-    void generateMap()
+    public void GenerateMap()
     {
         tileMatrix = new Tile[width][];
-
         for (int x = 0; x < width; x++)
         {
             tileMatrix[x] = new Tile[height];
-            for (int z = 0; z < height; z++)
+            for (int y = 0; y < height; y++)
             {
-                tileMatrix[x][z] = new Tile();
-                GameObject newTile = (GameObject)Instantiate(tilePrefab, new Vector3(x * 1, 0, z * 1), new Quaternion(0, 0, 0, 0));
-                newTile.name = "Tile-" + x + "-" + z;
-                newTile.transform.SetParent(this.transform);
-                MeshRenderer mr = newTile.GetComponentInChildren<MeshRenderer>();
-                tileMatrix[x][z].normalColor = mr.material.color;
-                tileMatrix[x][z].tileObject = newTile;
+                Tile tile = new Tile(plainTerrain);
+                tile.Instantiate(x,y).transform.SetParent(tilesParent.transform);
+                tileMatrix[x][y] = tile;
             }
         }
     }
 
-    public void selectTile(GameObject ourHitObject)
+    public void SelectTile(int x, int y)
     {
-        MeshRenderer mr;
-
-        if (selectedTile != null)
+        if(selectedTile != null)
         {
-            mr = selectedTile.tileObject.GetComponentInChildren<MeshRenderer>();
-            mr.material.color = selectedTile.normalColor;
+            selectedTile.Unselect();
         }
-        else
-        {
-            selectedTile = new Tile();
-        }
-
-        selectedTile.tileObject = ourHitObject;
-        mr = selectedTile.tileObject.GetComponentInChildren<MeshRenderer>();
-        selectedTile.normalColor = mr.material.color;
-        mr.material.color = highlightColor;
+        tileMatrix[x][y].Select();
+        selectedTile = tileMatrix[x][y];
     }
-
-    public void changeTile(GameObject gameObject, Tile newTile)
-    {
-        MeshRenderer mr;
-
-        if (selectedTile != null)
-        {
-            mr = selectedTile.tileObject.GetComponentInChildren<MeshRenderer>();
-            mr.material.color = selectedTile.normalColor;
-        }
-
-        string[] nameArray = gameObject.transform.parent.name.Split('-');
-        tileMatrix[int.Parse(nameArray[1])][int.Parse(nameArray[2])].normalColor = newTile.normalColor;
-        Transform origin = tileMatrix[int.Parse(nameArray[1])][int.Parse(nameArray[2])].tileObject.transform;
-        Object.Destroy(tileMatrix[int.Parse(nameArray[1])][int.Parse(nameArray[2])].tileObject);
-        tileMatrix[int.Parse(nameArray[1])][int.Parse(nameArray[2])].tileObject = Instantiate(newTile.tileObject, origin.position, origin.rotation, origin.parent);
-        tileMatrix[int.Parse(nameArray[1])][int.Parse(nameArray[2])].tileObject.name = origin.name;
-    }
-
 }

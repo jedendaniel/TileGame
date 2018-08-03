@@ -9,15 +9,18 @@ using System.Collections;
 public abstract class Command
 {
     public Command() { }
-    public abstract void Execute(GameManager gameManager);
+    public abstract void Execute();
 }
 
 public class MouseButtonDownCommand : Command
 {
-    public MouseButtonDownCommand() : base()
+    GameManager gameManager;
+
+    public MouseButtonDownCommand(GameManager gameManager) : base()
     {
+        this.gameManager = gameManager;
     }
-    public override void Execute(GameManager gameManager)
+    public override void Execute()
     {
 
 
@@ -33,7 +36,7 @@ public class MouseButtonDownCommand : Command
             switch (ourHitName[0])
             {
                 case "Tile":
-                    gameManager.map.selectTile(ourHitObject);
+                    //gameManager.map.SelectTile(ourHitObject);
                     break;
             }
         }
@@ -47,7 +50,7 @@ public class MouseButtonDownCommand : Command
 public class ButtonOCommand : Command
 {
     public ButtonOCommand() : base() { }
-    public override void Execute(GameManager gameManager)
+    public override void Execute()
     {
         Debug.Log("OoooooOoo");
     }
@@ -56,7 +59,7 @@ public class ButtonOCommand : Command
 public class Button4Command : Command
 {
     public Button4Command() : base() { }
-    public override void Execute(GameManager gameManager)
+    public override void Execute()
     {
         
     }
