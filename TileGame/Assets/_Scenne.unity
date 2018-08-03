@@ -245,6 +245,7 @@ MonoBehaviour:
     waterTerrain:
       type: 0
       prefab: {fileID: 1882787845215432, guid: 9cb963955bba57f4aa510f98eaf2352f, type: 2}
+  mainCamera: {fileID: 2079520240}
 --- !u!4 &1117027133
 Transform:
   m_ObjectHideFlags: 0
