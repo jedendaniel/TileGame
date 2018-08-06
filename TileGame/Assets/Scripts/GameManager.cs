@@ -1,5 +1,4 @@
-﻿using Assets.Scripts;
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,6 +11,7 @@ public class GameManager : MonoBehaviour {
 
     public Camera mainCamera;
     public Map map;
+    public TileGUI tileGUI;
 
     Vector3 rightClickPosition;
     
@@ -46,7 +46,8 @@ public class GameManager : MonoBehaviour {
         {
             GameObject ourHitObject = hitInfo.collider.transform.gameObject;
             string[] name = ourHitObject.name.Split('-');
-            map.SelectTile(int.Parse(name[1]), int.Parse(name[2]));
+            tileGUI.Select(map.SelectTile(int.Parse(name[1]), int.Parse(name[2])));
+            tileGUI.Display();
         }
     }
 

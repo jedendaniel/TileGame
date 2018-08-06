@@ -1,5 +1,4 @@
-﻿using Assets.Scripts;
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -29,14 +28,16 @@ public class Map{
             tileMatrix[x] = new Tile[height];
             for (int y = 0; y < height; y++)
             {
-                Tile tile = new Tile(plainTerrain);
+                Tile tile;
+                if (x % 2 == 0) tile = new Tile(plainTerrain);
+                else tile = new Tile(mountainTerrain);
                 tile.Instantiate(x,y).transform.SetParent(tilesParent.transform);
                 tileMatrix[x][y] = tile;
             }
         }
     }
 
-    public void SelectTile(int x, int y)
+    public Tile SelectTile(int x, int y)
     {
         if(selectedTile != null)
         {
@@ -44,5 +45,6 @@ public class Map{
         }
         tileMatrix[x][y].Select();
         selectedTile = tileMatrix[x][y];
+        return selectedTile;
     }
 }

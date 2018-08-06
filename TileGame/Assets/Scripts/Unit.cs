@@ -2,17 +2,16 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Unit : MonoBehaviour {
+public abstract class Unit : MonoBehaviour {
 
     public GameObject unitPrefab;
+    public UnitType type;
 
-	// Use this for initialization
-	void Start () {
-		
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
+    public int maxMovementPoints;
+    protected int movementPoints;
+
+    public int maxHealthPoints;
+    protected int healthPoints;
+
+    public abstract void Move(Vector2 destination);
 }

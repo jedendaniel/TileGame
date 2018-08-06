@@ -3,6 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-public class UnitManager
+public class Details
 {
 }
