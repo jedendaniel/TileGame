@@ -6,13 +6,26 @@ using UnityEngine;
 
 class Soldier : Unit, IRepresentable
 {
-    public Details GetDetails()
-    {
-        throw new NotImplementedException();
-    }
+    public int attackDamage;
+    public int attackRange;
 
-    public override void Move(Vector2 destination)
+    public void Start()
     {
         
+    }
+
+    public void CreateGUI(GUI gui)
+    {
+        gui.Display();
+    }
+
+    public override void Move(Tile destination)
+    {
+
+    }
+
+    public void Attack()
+    {
+
     }
 }

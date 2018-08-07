@@ -11,11 +11,14 @@ public class GameManager : MonoBehaviour {
 
     public Camera mainCamera;
     public Map map;
-    public TileGUI tileGUI;
+    public UnitManager unitManager;
+    public GUI tileGUI;
+    public GUI unitGUI;
 
     Vector3 rightClickPosition;
     
     void Start () {
+        map.LoadTerrains();
         map.GenerateMap();
 	}
 	void Update () {
@@ -46,8 +49,11 @@ public class GameManager : MonoBehaviour {
         {
             GameObject ourHitObject = hitInfo.collider.transform.gameObject;
             string[] name = ourHitObject.name.Split('-');
-            tileGUI.Select(map.SelectTile(int.Parse(name[1]), int.Parse(name[2])));
-            tileGUI.Display();
+            Tile selectedTile = map.SelectTile(int.Parse(name[1]), int.Parse(name[2]));
+            selectedTile.CreateGUI(tileGUI);
+            Unit selectedUnit = selectedTile.GetUnit();
+            if (selectedUnit != null) selectedTile.CreateGUI(unitGUI);
+            else unitGUI.Hide();
         }
     }
 

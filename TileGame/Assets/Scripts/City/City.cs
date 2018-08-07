@@ -7,17 +7,18 @@ using UnityEngine;
 class City : IRepresentable
 {
     GameObject gameObject;
-    CityDetails details = new CityDetails();
+    int size;
+    string name;
 
     public City(string name, GameObject gameObject)
     {
-        details.Size = 1;
-        details.Name = name;
+        this.size = 1;
+        this.name = name;
         this.gameObject = gameObject;
     }
 
-    public Details GetDetails()
+    public void CreateGUI(GUI gui)
     {
-        return details;
+        gui.Display();
     }
 }

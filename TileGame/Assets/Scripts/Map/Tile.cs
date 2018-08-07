@@ -9,10 +9,10 @@ public class Tile : IRepresentable
 {
     Color normalColor;
     GameObject gameObject;
-    TileDetails details = new TileDetails();
+    Terrain terrain;
     static Color selectColor = Color.red;
     City city;
-    List<IRepresentable> units = new List<IRepresentable>();
+    public List<Unit> units = new List<Unit>();
     int unitIndex = 0;
 
     public Tile()
@@ -21,7 +21,7 @@ public class Tile : IRepresentable
 
     public Tile(Terrain terrain)
     {
-        details.Terrain = terrain;
+        this.terrain = terrain;
     }
 
     public GameObject GameObject
@@ -32,11 +32,34 @@ public class Tile : IRepresentable
         }
     }
 
+    public Terrain Terrain
+    {
+        get
+        {
+            return terrain;
+        }
+    }
+
+    public Unit GetUnit()
+    {
+        if(units.Count > 0)
+        {
+            return units[unitIndex];
+        }
+        return null;
+    }
+
+    public void AddTestUnit(Unit unit)
+    {
+        units.Add(unit);
+        unitIndex = units.Count;
+    }
+
     public GameObject Instantiate(int x, int y)
     {
-        gameObject = GameObject.Instantiate(details.Terrain.prefab, new Vector3(x, 0, y), new Quaternion(0, 0, 0, 0));
+        gameObject = GameObject.Instantiate(terrain.prefab, new Vector3(x, 0, y), Quaternion.identity);
         gameObject.name = string.Join("-", new string[] { "tile", x.ToString(), y.ToString() });
-        details.Terrain.Color = gameObject.GetComponentInChildren<MeshRenderer>().material.color;
+        terrain.Color = gameObject.GetComponentInChildren<MeshRenderer>().material.color;
         return gameObject;
     }
 
@@ -45,24 +68,22 @@ public class Tile : IRepresentable
         MeshRenderer mr;
         mr = GameObject.GetComponentInChildren<MeshRenderer>();
         mr.material.color = selectColor;
-        //this.DisplayGUI();
-        //if (city != null) city.DisplayGUI();
-        //if (units.Count > 0)
-        //{
-        //    units[unitIndex].DisplayGUI();
-        //    if (unitIndex++ >= units.Count) unitIndex = 0;
-        //}
+        if (units.Count > 0)
+        {
+            if (unitIndex++ >= units.Count) unitIndex = 0;
+        }
     }
 
     public void Unselect()
     {
         MeshRenderer mr;
         mr = GameObject.gameObject.GetComponentInChildren<MeshRenderer>();
-        mr.material.color = details.Terrain.Color;
+        mr.material.color = terrain.Color;
+        unitIndex = units.Count;
     }
 
-    public Details GetDetails()
+    public void CreateGUI(GUI gui)
     {
-        return details;
+        gui.Display();
     }
 }

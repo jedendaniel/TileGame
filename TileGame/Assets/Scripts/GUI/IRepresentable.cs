@@ -5,5 +5,5 @@ using System.Text;
 
 interface IRepresentable
 {
-    Details GetDetails();
+    void CreateGUI(GUI gui);
 }

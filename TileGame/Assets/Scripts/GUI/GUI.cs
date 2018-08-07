@@ -1,12 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using UnityEngine;
+﻿using UnityEngine;
 
-public abstract class GUI : MonoBehaviour
+public class GUI : MonoBehaviour
 {
-    public abstract void Display();
+    public void Display()
+    {
+        gameObject.SetActive(true);
+    }
 
     public void Hide()
     {

@@ -7,17 +7,22 @@ using UnityEngine;
 public class Map{
     
     public int width, height;
-    public GameObject tilesParent;
+    public GameObject mapParent;
 
-    public Terrain plainTerrain;
-    public Terrain mountainTerrain;
-    public Terrain waterTerrain;
+    public Terrain[] terrainPrefabs;
+    public Dictionary<TileType, Terrain> terrains = new Dictionary<TileType, Terrain>();
 
     Tile[][] tileMatrix;
     Tile selectedTile;
+    
+    public Unit testUnit;
 
-    public Map()
+    public void LoadTerrains()
     {
+        foreach (Terrain t in terrainPrefabs)
+        {
+            terrains.Add(t.type, t);
+        }
     }
 
     public void GenerateMap()
@@ -29,9 +34,10 @@ public class Map{
             for (int y = 0; y < height; y++)
             {
                 Tile tile;
-                if (x % 2 == 0) tile = new Tile(plainTerrain);
-                else tile = new Tile(mountainTerrain);
-                tile.Instantiate(x,y).transform.SetParent(tilesParent.transform);
+                if (x % 2 == 0) tile = new Tile(terrains[TileType.PLAIN]);
+                else tile = new Tile(terrains[TileType.MOUNTAIN]);
+                if (x == 0 && y == 0) tile.AddTestUnit(testUnit);
+                tile.Instantiate(x,y).transform.SetParent(mapParent.transform);
                 tileMatrix[x][y] = tile;
             }
         }
