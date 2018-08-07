@@ -49,7 +49,12 @@ public class Tile : IRepresentable
         return null;
     }
 
-    public void AddTestUnit(Unit unit)
+    public void ReleaseUnit()
+    {
+        units.Remove(units[unitIndex]);
+    }
+
+    public void AddUnit(Unit unit)
     {
         units.Add(unit);
         unitIndex = units.Count;

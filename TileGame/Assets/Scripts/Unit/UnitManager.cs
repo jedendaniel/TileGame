@@ -8,6 +8,7 @@ public class UnitManager
 {
     public Unit[] unitPrefabs;
     Dictionary<UnitType, Unit> units = new Dictionary<UnitType, Unit>();
+    public Unit selectedUnit;
 
     public void Load()
     {
@@ -15,5 +16,10 @@ public class UnitManager
         {
             units.Add(u.type, u);
         }
+    }
+
+    public void UnselectUnit()
+    {
+        selectedUnit.Gui.Hide();
     }
 }

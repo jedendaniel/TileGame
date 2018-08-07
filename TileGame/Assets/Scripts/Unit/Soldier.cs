@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 
-class Soldier : Unit, IRepresentable
+class Soldier : Unit
 {
     public int attackDamage;
     public int attackRange;
@@ -14,14 +14,14 @@ class Soldier : Unit, IRepresentable
         
     }
 
-    public void CreateGUI(GUI gui)
+    public new void CreateGUI(GUI gui)
     {
-        gui.Display();
+        base.CreateGUI(gui);
     }
 
-    public override void Move(Tile destination)
+    public new void Move(Tile destination)
     {
-
+        base.Move(destination);
     }
 
     public void Attack()

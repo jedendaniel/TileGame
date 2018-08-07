@@ -17,6 +17,24 @@ public class Map{
     
     public Unit testUnit;
 
+    public Tile SelectedTile
+    {
+        get
+        {
+            return selectedTile;
+        }
+
+        set
+        {
+            selectedTile = value;
+        }
+    }
+
+    public Tile GetTile(int x, int y)
+    {
+        return tileMatrix[x][y];
+    }
+
     public void LoadTerrains()
     {
         foreach (Terrain t in terrainPrefabs)
@@ -36,7 +54,7 @@ public class Map{
                 Tile tile;
                 if (x % 2 == 0) tile = new Tile(terrains[TileType.PLAIN]);
                 else tile = new Tile(terrains[TileType.MOUNTAIN]);
-                if (x == 0 && y == 0) tile.AddTestUnit(testUnit);
+                if (x == 0 && y == 0) tile.AddUnit(testUnit);
                 tile.Instantiate(x,y).transform.SetParent(mapParent.transform);
                 tileMatrix[x][y] = tile;
             }
@@ -45,12 +63,12 @@ public class Map{
 
     public Tile SelectTile(int x, int y)
     {
-        if(selectedTile != null)
+        if(SelectedTile != null)
         {
-            selectedTile.Unselect();
+            SelectedTile.Unselect();
         }
         tileMatrix[x][y].Select();
-        selectedTile = tileMatrix[x][y];
-        return selectedTile;
+        SelectedTile = tileMatrix[x][y];
+        return SelectedTile;
     }
 }

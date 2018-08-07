@@ -39,6 +39,25 @@ public class GameManager : MonoBehaviour {
         {
             MoveCameraVertically();
         }
+        if (Input.GetMouseButtonDown(1))
+        {
+            if(unitManager.selectedUnit != null)
+            {
+                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+                RaycastHit hitInfo;
+                if (Physics.Raycast(ray, out hitInfo))
+                {
+                    GameObject ourHitObject = hitInfo.collider.transform.gameObject;
+                    string[] name = ourHitObject.name.Split('-');
+                    Tile selectedTile = map.GetTile(int.Parse(name[1]), int.Parse(name[2]));
+                    map.SelectedTile.ReleaseUnit();
+                    map.SelectedTile.Unselect();
+                    tileGUI.Hide();
+                    unitManager.selectedUnit.Move(selectedTile);
+                    unitManager.UnselectUnit();
+                }
+            }
+        }
     }
 
     void Select()
@@ -51,8 +70,8 @@ public class GameManager : MonoBehaviour {
             string[] name = ourHitObject.name.Split('-');
             Tile selectedTile = map.SelectTile(int.Parse(name[1]), int.Parse(name[2]));
             selectedTile.CreateGUI(tileGUI);
-            Unit selectedUnit = selectedTile.GetUnit();
-            if (selectedUnit != null) selectedTile.CreateGUI(unitGUI);
+            unitManager.selectedUnit = selectedTile.GetUnit();
+            if (unitManager.selectedUnit != null) unitManager.selectedUnit.CreateGUI(unitGUI);
             else unitGUI.Hide();
         }
     }
