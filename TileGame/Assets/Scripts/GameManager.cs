@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.UI;
 
 [Serializable]
 public class GameManager : MonoBehaviour {
@@ -15,20 +16,25 @@ public class GameManager : MonoBehaviour {
     public GUI tileGUI;
     public GUI unitGUI;
 
-    Vector3 rightClickPosition;
-    
+    Vector3 rightClickedPosition;
+    Tile leftClickedTile;
+
+    public Button endTurnButton;
+
     void Start () {
-        map.LoadTerrains();
-        map.GenerateMap();
+        unitManager.Load();
+        map.GetTile(0, 0).AddUnit(unitManager.GetUnitByType(UnitType.SOLDIER));
+        endTurnButton.onClick.AddListener(EndTurn);
 	}
-	void Update () {
+
+    void Update () {
         if (Input.GetMouseButtonDown(0))
         {
-            rightClickPosition = Input.mousePosition;
+            rightClickedPosition = Input.mousePosition;
         }
         if (Input.GetMouseButtonUp(0))
         {
-            if(rightClickPosition == Input.mousePosition)
+            if(rightClickedPosition == Input.mousePosition)
                 Select();
         }
         if (Input.GetMouseButton(0))
@@ -39,22 +45,50 @@ public class GameManager : MonoBehaviour {
         {
             MoveCameraVertically();
         }
-        if (Input.GetMouseButtonDown(1))
+        if (Input.GetMouseButton(1))
         {
-            if(unitManager.selectedUnit != null)
+            if (unitManager.selectedUnit != null)
             {
-                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-                RaycastHit hitInfo;
-                if (Physics.Raycast(ray, out hitInfo))
+                Tile tile = GetTileWithRaycast();
+                if (tile == leftClickedTile || tile == null) return;
+                leftClickedTile = tile;
+                foreach (Tile n in unitManager.selectedUnit.path)
                 {
-                    GameObject ourHitObject = hitInfo.collider.transform.gameObject;
-                    string[] name = ourHitObject.name.Split('-');
-                    Tile selectedTile = map.GetTile(int.Parse(name[1]), int.Parse(name[2]));
-                    map.SelectedTile.ReleaseUnit();
-                    map.SelectedTile.Unselect();
-                    tileGUI.Hide();
-                    unitManager.selectedUnit.Move(selectedTile);
-                    unitManager.UnselectUnit();
+                    if(n != map.SelectedTile)
+                    {
+                        MeshRenderer mr;
+                        mr = n.GameObject.GetComponentInChildren<MeshRenderer>();
+                        mr.material.color = n.Terrain.Color;
+                    }
+                }
+                if (tile == map.SelectedTile)
+                {
+                    unitManager.selectedUnit.path.Clear();
+                    return;
+                }
+                unitManager.selectedUnit.path = 
+                    map.GeneratePath(map.SelectedTile, tile);
+                foreach(Tile n in unitManager.selectedUnit.path)
+                {
+                    if (n != map.SelectedTile)
+                    {
+                        MeshRenderer mr;
+                        mr = n.GameObject.GetComponentInChildren<MeshRenderer>();
+                        mr.material.color = Color.white;
+                    }
+                }
+            }
+        }
+
+        if (Input.GetMouseButtonUp(1))
+        {
+            foreach (Tile n in unitManager.selectedUnit.path)
+            {
+                if (n != map.SelectedTile)
+                {
+                    MeshRenderer mr;
+                    mr = n.GameObject.GetComponentInChildren<MeshRenderer>();
+                    mr.material.color = n.Terrain.Color;
                 }
             }
         }
@@ -62,18 +96,27 @@ public class GameManager : MonoBehaviour {
 
     void Select()
     {
+        Tile selectedTile = GetTileWithRaycast();
+        if (selectedTile == null) return;
+        map.SelectTile(selectedTile);
+        selectedTile.CreateGUI(tileGUI);
+        unitManager.selectedUnit = selectedTile.GetUnit();
+        if (unitManager.selectedUnit != null) unitManager.selectedUnit.CreateGUI(unitGUI);
+        else unitGUI.Hide();
+    }
+
+    Tile GetTileWithRaycast()
+    {
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         RaycastHit hitInfo;
         if (Physics.Raycast(ray, out hitInfo))
         {
             GameObject ourHitObject = hitInfo.collider.transform.gameObject;
             string[] name = ourHitObject.name.Split('-');
-            Tile selectedTile = map.SelectTile(int.Parse(name[1]), int.Parse(name[2]));
-            selectedTile.CreateGUI(tileGUI);
-            unitManager.selectedUnit = selectedTile.GetUnit();
-            if (unitManager.selectedUnit != null) unitManager.selectedUnit.CreateGUI(unitGUI);
-            else unitGUI.Hide();
+            Tile selectedTile = map.GetTile(int.Parse(name[1]), int.Parse(name[2]));
+            return selectedTile;
         }
+        return null;
     }
 
     void MoveCameraHorizontally()
@@ -88,5 +131,10 @@ public class GameManager : MonoBehaviour {
             mainCamera.transform.position = new Vector3(mainCamera.transform.position.x, 10, mainCamera.transform.position.z);
         if (mainCamera.transform.position.y < 5)
             mainCamera.transform.position = new Vector3(mainCamera.transform.position.x, 5, mainCamera.transform.position.z);
+    }
+
+    void EndTurn()
+    {
+
     }
 }

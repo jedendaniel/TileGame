@@ -5,23 +5,17 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.Experimental.UIElements;
 
-public class Tile : IRepresentable
+public class Tile : Node, IRepresentable
 {
-    Color normalColor;
+    public static Color selectColor = Color.red;
+    Terrain terrain = new Terrain();
     GameObject gameObject;
-    Terrain terrain;
-    static Color selectColor = Color.red;
-    City city;
-    public List<Unit> units = new List<Unit>();
+    List<Unit> units = new List<Unit>();
     int unitIndex = 0;
 
-    public Tile()
+    public Tile(int x, int y) : base(x, y)
     {
-    }
-
-    public Tile(Terrain terrain)
-    {
-        this.terrain = terrain;
+        cost = terrain.cost;
     }
 
     public GameObject GameObject
@@ -38,6 +32,23 @@ public class Tile : IRepresentable
         {
             return terrain;
         }
+        set
+        {
+            terrain = value;
+        }
+    }
+
+    public GameObject Instantiate(int x, int y)
+    {
+        gameObject = GameObject.Instantiate(terrain.prefab, new Vector3(x, 0, y), Quaternion.identity);
+        gameObject.name = string.Join("-", new string[] { "tile", x.ToString(), y.ToString() });
+        return gameObject;
+    }
+
+    public void AddUnit(Unit unit)
+    {
+        units.Add(unit);
+        unitIndex = units.Count;
     }
 
     public Unit GetUnit()
@@ -52,20 +63,6 @@ public class Tile : IRepresentable
     public void ReleaseUnit()
     {
         units.Remove(units[unitIndex]);
-    }
-
-    public void AddUnit(Unit unit)
-    {
-        units.Add(unit);
-        unitIndex = units.Count;
-    }
-
-    public GameObject Instantiate(int x, int y)
-    {
-        gameObject = GameObject.Instantiate(terrain.prefab, new Vector3(x, 0, y), Quaternion.identity);
-        gameObject.name = string.Join("-", new string[] { "tile", x.ToString(), y.ToString() });
-        terrain.Color = gameObject.GetComponentInChildren<MeshRenderer>().material.color;
-        return gameObject;
     }
 
     public void Select()

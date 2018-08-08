@@ -1,15 +1,18 @@
-﻿ using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public abstract class Unit : MonoBehaviour, IRepresentable {
-    public UnitType type;
+    protected UnitType type;
 
     public int movementRange;
     public int movementPoints;
 
     public int maxHealthPoints;
     public int healthPoints;
+
+    public List<Tile> path = new List<Tile>();
 
     GUI gui;
 
@@ -18,6 +21,14 @@ public abstract class Unit : MonoBehaviour, IRepresentable {
         get
         {
             return gui;
+        }
+    }
+
+    public UnitType Type
+    {
+        get
+        {
+            return type;
         }
     }
 
@@ -31,5 +42,10 @@ public abstract class Unit : MonoBehaviour, IRepresentable {
     {
         destinationTile.AddUnit(this);
         transform.position = destinationTile.GameObject.transform.position;
+    }
+
+    public void TakeStep()
+    {
+
     }
 }

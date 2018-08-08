@@ -9,9 +9,9 @@ class Soldier : Unit
     public int attackDamage;
     public int attackRange;
 
-    public void Start()
+    void Start()
     {
-        
+        type = UnitType.SOLDIER;
     }
 
     public new void CreateGUI(GUI gui)

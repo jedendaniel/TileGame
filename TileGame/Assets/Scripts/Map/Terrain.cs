@@ -9,6 +9,7 @@ public class Terrain
 {
     public TileType type;
     public GameObject prefab;
+    public int cost;
     private Color color;
 
     public Terrain()

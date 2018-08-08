@@ -9,17 +9,28 @@ public class UnitManager
     public Unit[] unitPrefabs;
     Dictionary<UnitType, Unit> units = new Dictionary<UnitType, Unit>();
     public Unit selectedUnit;
+    List<Unit> unitsWithPath = new List<Unit>();
 
     public void Load()
     {
         foreach(Unit u in unitPrefabs)
         {
-            units.Add(u.type, u);
+            units.Add(u.Type, u);
         }
+    }
+
+    public Unit GetUnitByType(UnitType type)
+    {
+        return units[type];
     }
 
     public void UnselectUnit()
     {
         selectedUnit.Gui.Hide();
+    }
+
+    public void MoveUnits()
+    {
+
     }
 }

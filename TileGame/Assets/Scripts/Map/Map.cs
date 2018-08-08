@@ -3,36 +3,26 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[Serializable]
-public class Map{
-    
-    public int width, height;
-    public GameObject mapParent;
+public class Map : MonoBehaviour{
 
+    public static Color selectColor = Color.red;
+    public int width, height;
     public Terrain[] terrainPrefabs;
     public Dictionary<TileType, Terrain> terrains = new Dictionary<TileType, Terrain>();
-
-    Tile[][] tileMatrix;
-    Tile selectedTile;
     
-    public Unit testUnit;
-
-    public Tile SelectedTile
+    public Tile[,] tiles;
+    
+    public Tile SelectedTile;
+    
+    private void Start()
     {
-        get
-        {
-            return selectedTile;
-        }
-
-        set
-        {
-            selectedTile = value;
-        }
+        LoadTerrains();
+        GenerateMap();
     }
 
     public Tile GetTile(int x, int y)
     {
-        return tileMatrix[x][y];
+        return tiles[x,y];
     }
 
     public void LoadTerrains()
@@ -40,35 +30,159 @@ public class Map{
         foreach (Terrain t in terrainPrefabs)
         {
             terrains.Add(t.type, t);
+            t.Color = t.prefab.GetComponentInChildren<Renderer>().sharedMaterial.color;
         }
     }
 
     public void GenerateMap()
     {
-        tileMatrix = new Tile[width][];
+        tiles = new Tile[width,height];
         for (int x = 0; x < width; x++)
         {
-            tileMatrix[x] = new Tile[height];
             for (int y = 0; y < height; y++)
             {
-                Tile tile;
-                if (x % 2 == 0) tile = new Tile(terrains[TileType.PLAIN]);
-                else tile = new Tile(terrains[TileType.MOUNTAIN]);
-                if (x == 0 && y == 0) tile.AddUnit(testUnit);
-                tile.Instantiate(x,y).transform.SetParent(mapParent.transform);
-                tileMatrix[x][y] = tile;
+                Tile tile = new Tile(x, y);
+                tiles[x, y] = tile;
+                tiles[x, y].Terrain = terrains[TileType.PLAIN];
+            }
+        }
+        SetMapPattern();
+        SetTestData();
+        GenerateVisualMap();
+        Generatetiles();
+    }
+
+    public void GenerateVisualMap()
+    {
+        for (int x = 0; x < width; x++)
+        {
+            for (int y = 0; y < height; y++)
+            {
+                tiles[x, y].Instantiate(x, y).transform.SetParent(transform);
             }
         }
     }
 
-    public Tile SelectTile(int x, int y)
+    void SetMapPattern()
+    {
+        tiles[1, 1].Terrain = terrains[TileType.MOUNTAIN];
+        tiles[2, 1].Terrain = terrains[TileType.MOUNTAIN];
+        tiles[3, 1].Terrain = terrains[TileType.MOUNTAIN];
+        tiles[4, 1].Terrain = terrains[TileType.MOUNTAIN];
+        tiles[5, 1].Terrain = terrains[TileType.MOUNTAIN];
+        tiles[1, 2].Terrain = terrains[TileType.MOUNTAIN];
+        tiles[1, 3].Terrain = terrains[TileType.MOUNTAIN];
+        tiles[5, 2].Terrain = terrains[TileType.MOUNTAIN];
+        tiles[5, 3].Terrain = terrains[TileType.MOUNTAIN];
+    }
+
+    void SetTestData()
+    {
+    }
+
+    void Generatetiles()
+    {
+        for (int x = 0; x < width; x++)
+        {
+            for (int y = 0; y < height; y++)
+            {
+                tiles[x, y].cost = tiles[x,y].Terrain.cost;
+            }
+        }
+        for (int x = 0; x < width; x++)
+        {
+            for (int y = 0; y < height; y++)
+            {
+                if(x > 0)
+                    tiles[x, y].AddNeighbour(tiles[x -1, y]);
+                if (x < width - 1)
+                    tiles[x, y].AddNeighbour(tiles[x + 1,y]);
+                if (y > 0)
+                    tiles[x, y].AddNeighbour(tiles[x,y - 1]);
+                if (y < height - 1)
+                    tiles[x, y].AddNeighbour(tiles[x,y + 1]);
+
+                if (x > 0 && y > 0)
+                    tiles[x, y].AddNeighbour(tiles[x - 1, y - 1]);
+                if (x > 0 && y < height - 1)
+                    tiles[x, y].AddNeighbour(tiles[x - 1, y + 1]);
+                if (x < width - 1 && y > 0)
+                    tiles[x, y].AddNeighbour(tiles[x + 1, y - 1]);
+                if (x < width - 1 && y < height - 1)
+                    tiles[x, y].AddNeighbour(tiles[x + 1, y + 1]);
+            }
+        }
+    }
+
+    public List<Tile> GeneratePath(Tile source, Tile target)
+    {
+        Dictionary<Tile, int> dist = new Dictionary<Tile, int>();
+        Dictionary<Tile, Tile> prev = new Dictionary<Tile, Tile>();
+        List<Tile> unvisited = new List<Tile>();
+        
+        dist[source] = 0;
+        prev[source] = null;
+        
+        foreach (Tile v in tiles)
+        {
+            if (v != source)
+            {
+                dist[v] = int.MaxValue;
+                prev[v] = null;
+            }
+            unvisited.Add(v);
+        }
+
+        while (unvisited.Count > 0)
+        {
+            Tile u = null;
+            foreach (Tile possibleU in unvisited)
+            {
+                if (u == null || dist[possibleU] < dist[u])
+                {
+                    u = possibleU;
+                }
+            }
+            if (u == target)
+            {
+                break;
+            }
+            unvisited.Remove(u);
+            foreach (Tile v in u.Neighbours)
+            {
+                int alt = dist[u] + u.cost;
+                if (alt < dist[v])
+                {
+                    dist[v] = alt;
+                    prev[v] = u;
+                }
+            }
+        }
+
+        if (prev[target] == null)
+        {
+            return null;
+        }
+
+        List<Tile> currentPath = new List<Tile>();
+        Tile curr = target;
+        while (curr != null)
+        {
+            currentPath.Add(curr);
+            curr = prev[curr];
+        }
+        currentPath.Reverse();
+        return currentPath;
+    }
+
+    public Tile SelectTile(Tile tile)
     {
         if(SelectedTile != null)
         {
             SelectedTile.Unselect();
         }
-        tileMatrix[x][y].Select();
-        SelectedTile = tileMatrix[x][y];
+        tile.Select();
+        SelectedTile = tile;
         return SelectedTile;
     }
 }
