@@ -9,6 +9,7 @@ public class UnitManager
     public Unit[] unitPrefabs;
     Dictionary<UnitType, Unit> units = new Dictionary<UnitType, Unit>();
     public Unit selectedUnit;
+    public List<Unit> allUnits = new List<Unit>();
     List<Unit> unitsWithPath = new List<Unit>();
 
     public void Load()
@@ -29,8 +30,30 @@ public class UnitManager
         selectedUnit.Gui.Hide();
     }
 
-    public void MoveUnits()
+    public void AddUnitWithPath()
     {
+        unitsWithPath.Add(selectedUnit);
+    }
 
+    public void MoveAutomatically()
+    {
+        List<Unit> unitsWithEndedPath = new List<Unit>();
+        foreach(Unit u in unitsWithPath)
+        {
+            if (u.path.Count == 0) unitsWithEndedPath.Add(u);
+            else u.Move();
+        }
+        foreach(Unit u in unitsWithEndedPath)
+        {
+            unitsWithPath.Remove(u);
+        }
+    }
+
+    public void Restore()
+    {
+        foreach(Unit u in allUnits)
+        {
+            u.movementPoints = u.movementRange;
+        }
     }
 }

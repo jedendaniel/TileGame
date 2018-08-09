@@ -49,6 +49,8 @@ public class Tile : Node, IRepresentable
     {
         units.Add(unit);
         unitIndex = units.Count;
+        unit.actualTile = this;
+        unit.SetMovementCostToNeighboursTiles(this);
     }
 
     public Unit GetUnit()
@@ -63,6 +65,11 @@ public class Tile : Node, IRepresentable
     public void ReleaseUnit()
     {
         units.Remove(units[unitIndex]);
+        unitIndex = 0;
+    }
+    public void ReleaseUnit(Unit unit)
+    {
+        units.Remove(unit);
     }
 
     public void Select()

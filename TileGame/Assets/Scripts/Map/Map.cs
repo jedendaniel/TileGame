@@ -49,7 +49,7 @@ public class Map : MonoBehaviour{
         SetMapPattern();
         SetTestData();
         GenerateVisualMap();
-        Generatetiles();
+        GenerateGraph();
     }
 
     public void GenerateVisualMap()
@@ -80,20 +80,15 @@ public class Map : MonoBehaviour{
     {
     }
 
-    void Generatetiles()
+    void GenerateGraph()
     {
         for (int x = 0; x < width; x++)
         {
             for (int y = 0; y < height; y++)
             {
-                tiles[x, y].cost = tiles[x,y].Terrain.cost;
-            }
-        }
-        for (int x = 0; x < width; x++)
-        {
-            for (int y = 0; y < height; y++)
-            {
-                if(x > 0)
+                tiles[x, y].cost = tiles[x, y].Terrain.cost;
+
+                if (x > 0)
                     tiles[x, y].AddNeighbour(tiles[x -1, y]);
                 if (x < width - 1)
                     tiles[x, y].AddNeighbour(tiles[x + 1,y]);
@@ -172,6 +167,7 @@ public class Map : MonoBehaviour{
             curr = prev[curr];
         }
         currentPath.Reverse();
+        currentPath.RemoveAt(0);
         return currentPath;
     }
 

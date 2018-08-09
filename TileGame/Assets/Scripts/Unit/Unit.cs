@@ -13,6 +13,8 @@ public abstract class Unit : MonoBehaviour, IRepresentable {
     public int healthPoints;
 
     public List<Tile> path = new List<Tile>();
+    public Dictionary<Tile, int> movementCostToNeighboursTiles = new Dictionary<Tile, int>();
+    public Tile actualTile;
 
     GUI gui;
 
@@ -38,14 +40,33 @@ public abstract class Unit : MonoBehaviour, IRepresentable {
         this.gui.Display();
     }
 
-    public void Move(Tile destinationTile)
+    public void SetMovementCostToNeighboursTiles(Tile tile)
     {
-        destinationTile.AddUnit(this);
-        transform.position = destinationTile.GameObject.transform.position;
+        movementCostToNeighboursTiles = new Dictionary<Tile, int>();
+        foreach (Tile t in tile.Neighbours)
+        {
+            movementCostToNeighboursTiles.Add(t, t.Terrain.cost);
+        }
     }
 
-    public void TakeStep()
+    public void Move()
     {
+        while (movementPoints > 0)
+        {
+            movementPoints -= movementCostToNeighboursTiles[path[0]];
+            if(movementPoints < 0)
+            {
+                movementCostToNeighboursTiles[path[0]] -= movementRange;
+                movementPoints = 0;
+                break;
+            }
+            actualTile.ReleaseUnit(this);
+            path[0].AddUnit(this);
+            actualTile = path[0];
+            transform.position = path[0].GameObject.transform.position;
+            path.RemoveAt(0);
+        }
 
+        
     }
 }

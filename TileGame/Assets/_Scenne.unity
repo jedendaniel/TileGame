@@ -884,6 +884,16 @@ Prefab:
       propertyPath: type
       value: 2
       objectReference: {fileID: 0}
+    - target: {fileID: 114387264409972532, guid: 6cc61f1e403561f4581cdd76464dfc9f,
+        type: 2}
+      propertyPath: movementRange
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 114387264409972532, guid: 6cc61f1e403561f4581cdd76464dfc9f,
+        type: 2}
+      propertyPath: movementPoints
+      value: 2
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 6cc61f1e403561f4581cdd76464dfc9f, type: 2}
   m_IsPrefabParent: 0

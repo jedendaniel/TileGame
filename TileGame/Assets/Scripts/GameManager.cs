@@ -24,6 +24,7 @@ public class GameManager : MonoBehaviour {
     void Start () {
         unitManager.Load();
         map.GetTile(0, 0).AddUnit(unitManager.GetUnitByType(UnitType.SOLDIER));
+        unitManager.allUnits.Add(unitManager.GetUnitByType(UnitType.SOLDIER));
         endTurnButton.onClick.AddListener(EndTurn);
 	}
 
@@ -68,7 +69,7 @@ public class GameManager : MonoBehaviour {
                 }
                 unitManager.selectedUnit.path = 
                     map.GeneratePath(map.SelectedTile, tile);
-                foreach(Tile n in unitManager.selectedUnit.path)
+                foreach (Tile n in unitManager.selectedUnit.path)
                 {
                     if (n != map.SelectedTile)
                     {
@@ -90,6 +91,11 @@ public class GameManager : MonoBehaviour {
                     mr = n.GameObject.GetComponentInChildren<MeshRenderer>();
                     mr.material.color = n.Terrain.Color;
                 }
+            }
+            if (unitManager.selectedUnit.path != null)
+            {
+                unitManager.selectedUnit.Move();
+                if (unitManager.selectedUnit.path.Count > 0) unitManager.AddUnitWithPath();
             }
         }
     }
@@ -135,6 +141,7 @@ public class GameManager : MonoBehaviour {
 
     void EndTurn()
     {
-
+        unitManager.MoveAutomatically();
+        unitManager.Restore();
     }
 }

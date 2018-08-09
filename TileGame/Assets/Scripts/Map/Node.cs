@@ -5,7 +5,7 @@ using System.Text;
 
 public class Node
 {
-    List<Node> neighbours = new List<Node>();
+    protected List<Node> neighbours = new List<Node>();
     protected int x;
     protected int y;
     public int cost;

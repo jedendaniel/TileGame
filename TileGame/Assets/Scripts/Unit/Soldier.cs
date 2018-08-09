@@ -19,9 +19,9 @@ class Soldier : Unit
         base.CreateGUI(gui);
     }
 
-    public new void Move(Tile destination)
+    public new void Move()
     {
-        base.Move(destination);
+        base.Move();
     }
 
     public void Attack()
