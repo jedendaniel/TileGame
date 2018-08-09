@@ -9,7 +9,7 @@ class Soldier : Unit
     public int attackDamage;
     public int attackRange;
 
-    void Start()
+    public Soldier() : base()
     {
         type = UnitType.SOLDIER;
     }

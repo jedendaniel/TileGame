@@ -5,14 +5,11 @@ using UnityEngine;
 
 public class Map : MonoBehaviour{
 
-    public static Color selectColor = Color.red;
     public int width, height;
     public Terrain[] terrainPrefabs;
     public Dictionary<TileType, Terrain> terrains = new Dictionary<TileType, Terrain>();
     
     public Tile[,] tiles;
-    
-    public Tile SelectedTile;
     
     private void Start()
     {
@@ -23,6 +20,12 @@ public class Map : MonoBehaviour{
     public Tile GetTile(int x, int y)
     {
         return tiles[x,y];
+    }
+
+    public void ResetTile(Tile tile)
+    {
+        tile.ResetColor();
+        tile.ResetUnitIndex();
     }
 
     public void LoadTerrains()
@@ -169,16 +172,5 @@ public class Map : MonoBehaviour{
         currentPath.Reverse();
         currentPath.RemoveAt(0);
         return currentPath;
-    }
-
-    public Tile SelectTile(Tile tile)
-    {
-        if(SelectedTile != null)
-        {
-            SelectedTile.Unselect();
-        }
-        tile.Select();
-        SelectedTile = tile;
-        return SelectedTile;
     }
 }

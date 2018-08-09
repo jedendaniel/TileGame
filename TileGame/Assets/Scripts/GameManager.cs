@@ -1,9 +1,4 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -12,19 +7,22 @@ public class GameManager : MonoBehaviour {
 
     public Camera mainCamera;
     public Map map;
-    public UnitManager unitManager;
     public GUI tileGUI;
     public GUI unitGUI;
-
+    [SerializeField]
+    UnitManager unitManager;
+    static Color selectColor = Color.red;
+    Tile selectedTile;
     Vector3 rightClickedPosition;
     Tile leftClickedTile;
+
 
     public Button endTurnButton;
 
     void Start () {
         unitManager.Load();
-        map.GetTile(0, 0).AddUnit(unitManager.GetUnitByType(UnitType.SOLDIER));
-        unitManager.allUnits.Add(unitManager.GetUnitByType(UnitType.SOLDIER));
+        unitManager.Map = map;
+        unitManager.SpawnUnit(UnitType.SOLDIER, map.GetTile(0, 0));
         endTurnButton.onClick.AddListener(EndTurn);
 	}
 
@@ -36,7 +34,7 @@ public class GameManager : MonoBehaviour {
         if (Input.GetMouseButtonUp(0))
         {
             if(rightClickedPosition == Input.mousePosition)
-                Select();
+                SelectTile();
         }
         if (Input.GetMouseButton(0))
         {
@@ -55,29 +53,19 @@ public class GameManager : MonoBehaviour {
                 leftClickedTile = tile;
                 foreach (Tile n in unitManager.selectedUnit.path)
                 {
-                    if(n != map.SelectedTile)
+                    if(n != selectedTile)
                     {
-                        MeshRenderer mr;
-                        mr = n.GameObject.GetComponentInChildren<MeshRenderer>();
-                        mr.material.color = n.Terrain.Color;
+                        n.ResetColor();
                     }
                 }
-                if (tile == map.SelectedTile)
+                if (tile == selectedTile)
                 {
                     unitManager.selectedUnit.path.Clear();
                     return;
                 }
                 unitManager.selectedUnit.path = 
-                    map.GeneratePath(map.SelectedTile, tile);
-                foreach (Tile n in unitManager.selectedUnit.path)
-                {
-                    if (n != map.SelectedTile)
-                    {
-                        MeshRenderer mr;
-                        mr = n.GameObject.GetComponentInChildren<MeshRenderer>();
-                        mr.material.color = Color.white;
-                    }
-                }
+                    map.GeneratePath(selectedTile, tile);
+                unitManager.selectedUnit.DrawPath();
             }
         }
 
@@ -85,29 +73,51 @@ public class GameManager : MonoBehaviour {
         {
             foreach (Tile n in unitManager.selectedUnit.path)
             {
-                if (n != map.SelectedTile)
+                if (n != selectedTile)
                 {
-                    MeshRenderer mr;
-                    mr = n.GameObject.GetComponentInChildren<MeshRenderer>();
-                    mr.material.color = n.Terrain.Color;
+                    n.ResetColor();
                 }
             }
-            if (unitManager.selectedUnit.path != null)
+            if (unitManager.selectedUnit.path.Count > 0)
             {
                 unitManager.selectedUnit.Move();
+                map.ResetTile(selectedTile);
                 if (unitManager.selectedUnit.path.Count > 0) unitManager.AddUnitWithPath();
             }
         }
     }
 
-    void Select()
+    void SelectTile()
     {
-        Tile selectedTile = GetTileWithRaycast();
-        if (selectedTile == null) return;
-        map.SelectTile(selectedTile);
-        selectedTile.CreateGUI(tileGUI);
+        Tile newTile = GetTileWithRaycast();   
+        if (newTile == null) return;
+        if(selectedTile != newTile)
+        {
+            if (selectedTile != null)
+            {
+                map.ResetTile(selectedTile);
+            }
+            selectedTile = newTile;
+            selectedTile.ChangeColor(selectColor);
+            selectedTile.CreateGUI(tileGUI);
+        }
+        else
+        {
+            selectedTile.SwitchToNextUnit();
+        }
+        if (unitManager.selectedUnit != null)
+        {
+            foreach (Tile t in unitManager.selectedUnit.path)
+            {
+                t.ResetColor();
+            }
+        }
         unitManager.selectedUnit = selectedTile.GetUnit();
-        if (unitManager.selectedUnit != null) unitManager.selectedUnit.CreateGUI(unitGUI);
+        if (unitManager.selectedUnit != null)
+        {
+            unitManager.selectedUnit.CreateGUI(unitGUI);
+            unitManager.selectedUnit.DrawPath();
+        }
         else unitGUI.Hide();
     }
 
@@ -118,9 +128,12 @@ public class GameManager : MonoBehaviour {
         if (Physics.Raycast(ray, out hitInfo))
         {
             GameObject ourHitObject = hitInfo.collider.transform.gameObject;
-            string[] name = ourHitObject.name.Split('-');
-            Tile selectedTile = map.GetTile(int.Parse(name[1]), int.Parse(name[2]));
-            return selectedTile;
+            if(ourHitObject != null)
+            {
+                string[] name = ourHitObject.name.Split('-');
+                Tile selectedTile = map.GetTile(int.Parse(name[1]), int.Parse(name[2]));
+                return selectedTile;
+            }
         }
         return null;
     }
@@ -141,6 +154,18 @@ public class GameManager : MonoBehaviour {
 
     void EndTurn()
     {
+        if (selectedTile != null)
+        {
+            if (unitManager.selectedUnit != null)
+            {
+                foreach (Tile t in unitManager.selectedUnit.path)
+                {
+                    t.ResetColor();
+                }
+            }
+            map.ResetTile(selectedTile);
+            selectedTile = null;
+        }
         unitManager.MoveAutomatically();
         unitManager.Restore();
     }

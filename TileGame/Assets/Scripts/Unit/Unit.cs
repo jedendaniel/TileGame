@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 public abstract class Unit : MonoBehaviour, IRepresentable {
@@ -17,6 +15,16 @@ public abstract class Unit : MonoBehaviour, IRepresentable {
     public Tile actualTile;
 
     GUI gui;
+
+    protected Unit()
+    {
+    }
+
+    public void Init()
+    {
+        movementPoints = movementRange;
+        healthPoints = maxHealthPoints;
+    }
 
     public GUI Gui
     {
@@ -51,7 +59,7 @@ public abstract class Unit : MonoBehaviour, IRepresentable {
 
     public void Move()
     {
-        while (movementPoints > 0)
+        while (movementPoints > 0 && path.Count > 0)
         {
             movementPoints -= movementCostToNeighboursTiles[path[0]];
             if(movementPoints < 0)
@@ -66,7 +74,24 @@ public abstract class Unit : MonoBehaviour, IRepresentable {
             transform.position = path[0].GameObject.transform.position;
             path.RemoveAt(0);
         }
+    }
 
-        
+    public void DrawPath()
+    {
+        if (path.Count == 0) return;
+        int availableCost = movementPoints;
+        availableCost -= movementCostToNeighboursTiles[path[0]];
+        foreach (Tile t in path)
+        {
+            if (t != actualTile)
+            {
+                if (availableCost >= 0)
+                    t.ChangeColor(Color.yellow);
+                else
+                    t.ChangeColor(Color.gray);
+
+                availableCost -= t.cost;
+            }
+        }
     }
 }

@@ -48,7 +48,6 @@ public class Tile : Node, IRepresentable
     public void AddUnit(Unit unit)
     {
         units.Add(unit);
-        unitIndex = units.Count;
         unit.actualTile = this;
         unit.SetMovementCostToNeighboursTiles(this);
     }
@@ -72,23 +71,28 @@ public class Tile : Node, IRepresentable
         units.Remove(unit);
     }
 
-    public void Select()
+    public void ResetUnitIndex()
+    {
+        unitIndex = 0;
+    }
+
+    public void SwitchToNextUnit()
+    {
+        unitIndex++;
+        if (unitIndex >= units.Count)
+            unitIndex = 0;
+    }
+
+    public void ChangeColor(Color color)
     {
         MeshRenderer mr;
         mr = GameObject.GetComponentInChildren<MeshRenderer>();
-        mr.material.color = selectColor;
-        if (units.Count > 0)
-        {
-            if (unitIndex++ >= units.Count) unitIndex = 0;
-        }
+        mr.material.color = color;
     }
 
-    public void Unselect()
+    public void ResetColor()
     {
-        MeshRenderer mr;
-        mr = GameObject.gameObject.GetComponentInChildren<MeshRenderer>();
-        mr.material.color = terrain.Color;
-        unitIndex = units.Count;
+        ChangeColor(terrain.Color);
     }
 
     public void CreateGUI(GUI gui)

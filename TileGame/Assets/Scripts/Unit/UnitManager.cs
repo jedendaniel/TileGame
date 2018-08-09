@@ -1,22 +1,33 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using UnityEngine;
 
 [Serializable]
 public class UnitManager
 {
     public Unit[] unitPrefabs;
     Dictionary<UnitType, Unit> units = new Dictionary<UnitType, Unit>();
+    [HideInInspector]
     public Unit selectedUnit;
-    public List<Unit> allUnits = new List<Unit>();
+    [HideInInspector]
+    public List<Unit> inGameUnits = new List<Unit>();
     List<Unit> unitsWithPath = new List<Unit>();
+    Map map;
+
+    public Map Map
+    {
+        set
+        {
+            map = value;
+        }
+    }
 
     public void Load()
     {
         foreach(Unit u in unitPrefabs)
         {
             units.Add(u.Type, u);
+            u.Init();
         }
     }
 
@@ -25,9 +36,11 @@ public class UnitManager
         return units[type];
     }
 
-    public void UnselectUnit()
+    public void SpawnUnit(UnitType type, Tile tile)
     {
-        selectedUnit.Gui.Hide();
+        Unit newUnit = GameObject.Instantiate(units[type], tile.GameObject.transform.position, Quaternion.identity);
+        tile.AddUnit(newUnit);
+        inGameUnits.Add(newUnit);
     }
 
     public void AddUnitWithPath()
@@ -51,7 +64,7 @@ public class UnitManager
 
     public void Restore()
     {
-        foreach(Unit u in allUnits)
+        foreach(Unit u in inGameUnits)
         {
             u.movementPoints = u.movementRange;
         }
